@@ -1,5 +1,7 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 /* Class 1 */
 $data = require "data.php";
 
@@ -124,4 +126,38 @@ usort($data, function (array $firstCountry, array $secondCountry) {
         : $comparator('bronze'));
 });
 
+var_dump($data);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* Class 4 */
+
+$countryNamesToUpperCase = fn ($data) => array_map('convertCountryToUpperCase', $data);
+$filterCountryNamesWithoutSpace = fn ($data) => array_filter($data, $checksCountryHasSpaceInTheName);
+
+$data = $countryNamesToUpperCase($data);
+$data = $filterCountryNamesWithoutSpace($data);
+
+function pipe(callable ...$callbacks): callable
+{
+    return fn ($value) => array_reduce($callbacks, fn ($value, callable $callback) => $callback($value), $value);
+}
+
+$functions = pipe($countryNamesToUpperCase, $filterCountryNamesWithoutSpace);
+$data = $functions($data);
+
+echo "\nPIPE:\n";
+var_dump($data);
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+$countryNamesToUpperCase = fn ($data) => array_map('convertCountryToUpperCase', $data);
+$filterCountryNamesWithoutSpace = fn ($data) => array_filter($data, $checksCountryHasSpaceInTheName);
+
+$data = $countryNamesToUpperCase($data);
+$data = $filterCountryNamesWithoutSpace($data);
+
+$functions = \igorw\pipeline($countryNamesToUpperCase, $filterCountryNamesWithoutSpace);
+$data = $functions($data);
+
+echo "\nPIPE OF PACKAGE:\n";
 var_dump($data);
